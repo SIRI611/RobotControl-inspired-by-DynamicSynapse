@@ -1,17 +1,14 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 # @FileName  :Neural_Network.py
-# @Time      :2022/11/28 11:02
+# @Time      :2022/12/2 21:27
 # @Author    :Siri
-
 import numpy as np
-import ChoosePath
 import DynamicSynapse
 import FitzHughNagumo
 import Functions
 import copy
 import gym
-import keyBoardControl
 from collections import deque
 from NN_Layers import InitLayers
 import argparse
@@ -29,12 +26,14 @@ def PreProcess(Observation):
     #          0.5,1,0.25,1,2,
     #          1,1,1,1,1,
     #          1,1,1,1])
-    NormalizeOb = Observation
+    NormalizeOb = np.hstack((Observation[5:13],Observation[19:27]))
     # print(NormalizeOb)
     # NormalizeOb = Observation
-    co = Functions.relu(NormalizeOb[0:14])
-    re = Functions.relu(-NormalizeOb[0:14])
-    Combination = np.hstack((co,re,NormalizeOb[14:],1))
+    co = Functions.relu(NormalizeOb)
+    re = Functions.relu(-NormalizeOb)
+    TorsoObservation = np.hstack((Observation[0:5],Observation[13:19]))
+    Combination = np.hstack((co,re,TorsoObservation,1))
+    print(Combination)
     return Functions.tanh(Combination)
 
 def MergeInputs(Observation, Action):
@@ -51,10 +50,9 @@ def ForwardPropagation(Observation, action, dt, NumOfStep, RecordAll, NNList, Ne
     OutputOfLayer2 = np.dot(NNList["Layer2"].Weighters, InputOfLayer2)
 
     InputOfLayer3 = Functions.tanh(OutputOfLayer2)
-    # TODO find out the relationship between input and output --> update
     OutputOfLayer3 = np.array((NNList["Layer3"].Vn, NNList["Layer3"].Wn)).ravel()
 
-    InputOfLayer4 = np.hstack((OutputOfLayer3, Observation[0:14],1))
+    InputOfLayer4 = np.hstack((OutputOfLayer3, np.hstack((Observation[5:13],Observation[19:27])),1))
     OutputOfLayer4 = np.dot(NNList["Layer4"].Weighters, InputOfLayer4)
 
     RecordOfInput = dict()
@@ -93,21 +91,4 @@ def NetworkDynamics(NN, Record, reward, t, dt, StepNumber):
     NN["Layer4"].Recording(StepNumber,4)
 
 if __name__ == "__main__":
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--Repulsive', nargs='?', type=Functions.str2bool(),
-                        choices=[True, False],
-                        default=True,
-                        help='Enable or disable repulsive learning')
-    parser.add_argument('--StepRecording', nargs='?', type=Functions.str2bool(),
-                        choices=[True, False],
-                        default=True,
-                        help='Enable or disable step recording, at least 16 GB memory is required')
-    parser.add_argument('--Adaption', nargs='?',
-                        choices=['None', 'Linear', 'Nonlinear'],
-                        default='Nonlinear',
-                        help='Choose a type of adaptions')
-
-    args = parser.parse_args()
-
-
+    run_code = 0

@@ -5,6 +5,7 @@
 # @Author    :Siri
 
 import numpy as np
+import discrete
 import ChoosePath
 import DynamicSynapse
 import FitzHughNagumo
@@ -32,9 +33,9 @@ def PreProcess(Observation):
     NormalizeOb = Observation
     # print(NormalizeOb)
     # NormalizeOb = Observation
-    co = Functions.relu(NormalizeOb[0:14])
-    re = Functions.relu(-NormalizeOb[0:14])
-    Combination = np.hstack((co,re,NormalizeOb[14:],1))
+    co = Functions.relu(NormalizeOb[0:6])
+    re = Functions.relu(-NormalizeOb[0:6])
+    Combination = np.hstack((co,re,NormalizeOb[6:],1))
     return Functions.tanh(Combination)
 
 def MergeInputs(Observation, Action):
@@ -50,11 +51,14 @@ def ForwardPropagation(Observation, action, dt, NumOfStep, RecordAll, NNList, Ne
     InputOfLayer2 = np.hstack((OutputOfLayer1,1))
     OutputOfLayer2 = np.dot(NNList["Layer2"].Weighters, InputOfLayer2)
 
-    InputOfLayer3 = Functions.tanh(OutputOfLayer2)
+    # InputOfLayer3 = Functions.tanh(OutputOfLayer2)
     # TODO find out the relationship between input and output --> update
-    OutputOfLayer3 = np.array((NNList["Layer3"].Vn, NNList["Layer3"].Wn)).ravel()
+    # OutputOfLayer3 = np.array((NNList["Layer3"].Vn, NNList["Layer3"].Wn)).ravel()
 
-    InputOfLayer4 = np.hstack((OutputOfLayer3, Observation[0:14],1))
+    InputOfLayer3 = np.hstack((OutputOfLayer2, Observation[0:6],1))
+    OutputOfLayer3 = np.dot(NNList["Layer3"].Weighters, InputOfLayer3)
+
+    InputOfLayer4 = np.tanh(OutputOfLayer3)
     OutputOfLayer4 = np.dot(NNList["Layer4"].Weighters, InputOfLayer4)
 
     RecordOfInput = dict()
@@ -70,8 +74,7 @@ def ForwardPropagation(Observation, action, dt, NumOfStep, RecordAll, NNList, Ne
     Record["OutputLayer2"] = OutputOfLayer2
     Record["OutputLayer3"] = OutputOfLayer3
     Record["OutputLayer4"] = OutputOfLayer4
-    Record["ActionOutput"] = Functions.tanh(OutputOfLayer4)
-
+    Record["ActionOutput"] = np.tanh(OutputOfLayer4)*2
 
     RecordAll.append(Record)
 
@@ -85,8 +88,7 @@ def NetworkDynamics(NN, Record, reward, t, dt, StepNumber):
     NN["Layer2"].Weighters = NN["Layer2"].StepSynapseDynamics(dt, t, reward, PreSynActivity=None)
     NN["Layer2"].Recording(StepNumber,2)
 
-    NN["Layer3"].StepDynamics(dt, Record["InputOfLayer3"])
-    NN["Layer3"].Update()
+    NN["Layer3"].Weighters = NN["Layer3"].StepSynapseDynamics(dt, t, reward, PreSynActivity=None)
     NN["Layer3"].Recording(StepNumber,3)
 
     NN["Layer4"].Weighters = NN["Layer4"].StepSynapseDynamics(dt, t, reward, PreSynActivity=None)

@@ -10,26 +10,26 @@ from NN_Layers import InitLayers
 
 
 if __name__ == "__main__":
-    experiment = 'BipedalWalker-v3'
+    experiment = 'LunarLander-v2'
     env = gym.make(experiment)
 
-    num_states = env.observation_space.shape[0]
-    num_actions = env.action_space.shape[0]
+    # num_states = env.observation_space.shape[0]
+    num_actions = env.action_space
+    print(num_actions)
     observation = env.reset()
 
     NN_ARCHITECTURE = [
-        {"INPUT_DIM1": 43,"OUTPUT_DIM1": 8},
-        {"INPUT_DIM2": 9, "OUTPUT_DIM2": 2},
-        {"INPUT_DIM3": 2, "OUTPUT_DIM3": 4},
-        {"INPUT_DIM4": 19, "OUTPUT_DIM4": 4},
+        {"INPUT_DIM1": 16,"OUTPUT_DIM1": 8},
+        {"INPUT_DIM2": 9, "OUTPUT_DIM2": 4},
+        {"INPUT_DIM3": 11, "OUTPUT_DIM3": 4},
+        {"INPUT_DIM4": 4, "OUTPUT_DIM4": 1}
     ]
     RecordAll = []
     dt = 33
-    N_episode = 10
+    N_episode = 100
     T = 0
     NeuronSensitivity = np.ones(NN_ARCHITECTURE[0]["OUTPUT_DIM1"])*0.5
-    action = np.zeros(num_actions)
-
+    action = 1
     NN = InitLayers(NN_ARCHITECTURE)
     # print(NN["Layer1"].Weighters.shape)
     for i in range(N_episode):
@@ -43,10 +43,19 @@ if __name__ == "__main__":
             env.render()
             RecordOfStep = nn.ForwardPropagation(observation, action, dt, count, RecordAll, NN, NeuronSensitivity, i)
             action = RecordOfStep["ActionOutput"]
+            print(action)
             NeuronSensitivity = nn.NeuronSensitivityUpdate(NeuronSensitivity, RecordOfStep, UpdateRate=00000.1, dt=dt)
             #print(NeuronSensitivity)
-            observation, reward, done, info = env.step(action)
-            nn.NetworkDynamics(NN,RecordOfStep, reward, T, dt, i)
+            if action <= 0:
+                observation, reward, done, info = env.step(0)
+            if action > 0 and action <= 0.3:
+                observation, reward, done, info = env.step(1)
+            if action > 0.3 and action <= 0.7 :
+                observation, reward, done, info = env.step(2)
+            if action > 0.7 and action <= 1:
+                observation, reward, done, info = env.step(3)
+
+            nn.NetworkDynamics(NN, RecordOfStep, reward, T, dt, i)
             #print(env.step(action))
             if done:
                 env.reset()

@@ -1,27 +1,28 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 # @FileName  :Main.py
-# @Time      :2022/11/29 21:54
+# @Time      :2022/12/2 21:40
 # @Author    :Siri
-import gym
+import gymnasium
+import mujoco_py
 import numpy as np
 import Neural_Network as nn
 from NN_Layers import InitLayers
 
 
 if __name__ == "__main__":
-    experiment = 'BipedalWalker-v3'
-    env = gym.make(experiment)
-
+    experiment = 'Ant-v4'
+    env = gymnasium.make(experiment)
     num_states = env.observation_space.shape[0]
     num_actions = env.action_space.shape[0]
     observation = env.reset()
+    ObservationNorm = observation
 
     NN_ARCHITECTURE = [
-        {"INPUT_DIM1": 43,"OUTPUT_DIM1": 8},
-        {"INPUT_DIM2": 9, "OUTPUT_DIM2": 2},
-        {"INPUT_DIM3": 2, "OUTPUT_DIM3": 4},
-        {"INPUT_DIM4": 19, "OUTPUT_DIM4": 4},
+        {"INPUT_DIM1": 52,"OUTPUT_DIM1": 16},
+        {"INPUT_DIM2": 17, "OUTPUT_DIM2": 4},
+        {"INPUT_DIM3": 4, "OUTPUT_DIM3": 8},
+        {"INPUT_DIM4": 25, "OUTPUT_DIM4": 8},
     ]
     RecordAll = []
     dt = 33
@@ -31,21 +32,22 @@ if __name__ == "__main__":
     action = np.zeros(num_actions)
 
     NN = InitLayers(NN_ARCHITECTURE)
-    # print(NN["Layer1"].Weighters.shape)
+    print(NN["Layer1"].Weighters.shape)
     for i in range(N_episode):
         #print(i)
         count = 0
         while True:
             count += 1
-            print("EpisodeNumber  ",i)
-            print("StepNumber:  ",count)
+            print(count)
             T += dt
             env.render()
-            RecordOfStep = nn.ForwardPropagation(observation, action, dt, count, RecordAll, NN, NeuronSensitivity, i)
+            RecordOfStep = nn.ForwardPropagation(ObservationNorm, action, dt, count, RecordAll, NN, NeuronSensitivity, i)
             action = RecordOfStep["ActionOutput"]
             NeuronSensitivity = nn.NeuronSensitivityUpdate(NeuronSensitivity, RecordOfStep, UpdateRate=00000.1, dt=dt)
             #print(NeuronSensitivity)
+            print(env.step(action))
             observation, reward, done, info = env.step(action)
+            ObservationNorm = observation
             nn.NetworkDynamics(NN,RecordOfStep, reward, T, dt, i)
             #print(env.step(action))
             if done:

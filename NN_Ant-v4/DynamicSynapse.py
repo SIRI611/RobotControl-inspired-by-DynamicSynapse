@@ -1,17 +1,11 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 # @FileName  :DynamicSynapse.py
-# @Time      :2022/11/28 9:59
+# @Time      :2022/12/2 21:28
 # @Author    :Siri
-import Functions
 import numpy as np
-import copy
 from collections import deque
-import json
-import pandas as pd
-import matplotlib.pyplot as plt
-
-
+import copy
 class DynamicSynapseArray:
     def __init__(self, NumberOfSynapses = [1, 3], Period = None, tInPeriod = None, PeriodVar = None, Amp=None,
                  WeightersCentre=None, WeightersCentreUpdateRate=0.000012, WeightersOscilateDecay=0.0000003,
@@ -96,4 +90,5 @@ class DynamicSynapseArray:
         self.Trace['Period'].append(self.Period)
         self.Trace['tInPeriod'].append(self.tInPeriod)
         self.Trace['t'].append(self.t)
-
+if __name__ == "__main__":
+    run_code = 0
