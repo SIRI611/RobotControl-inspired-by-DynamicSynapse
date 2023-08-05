@@ -21,6 +21,8 @@ import argparse
 def ChooseRecordingPath(experiment, TimeOfRecording):
     if platform.node() == 'LAPTOP-68CSC593':
         path='J:/recording/OpenAIGym/'+experiment+'/'+TimeOfRecording+'/'
+    elif platform.node() == 'robot-GALAX-B760-METALTOP-D4':
+        path='/home/robot/Documents/SimulationRecord/OpenAIGym/'+experiment+'/'+TimeOfRecording+'/'
     else:
         path=''
     if not os.path.exists(path):
@@ -30,6 +32,8 @@ def ChooseRecordingPath(experiment, TimeOfRecording):
 def ChooseResultPath(experiment, TimeOfRecording):
     if platform.node() == 'LAPTOP-68CSC593':
         path='J:/SimulationResult/OpenAIGym/'+experiment+'/'+TimeOfRecording+'/'
+    elif platform.node() == 'robot-GALAX-B760-METALTOP-D4':
+        path='/home/robot/Documents/SimulationResult/OpenAIGym/'+experiment+'/'+TimeOfRecording+'/'
     else:
         path = ''
     if not os.path.exists(path):
@@ -133,14 +137,14 @@ if __name__ == "__main__":
     Adaption = args.Adaption
     if new:
         experiment= 'Humanoid-v4'#'InvertedPendulum-v1' #'InvertedDoublePendulum-v1' #'Walker2d-v1' #'BipedalWalker-v2'# 'RoboschoolWalker2d-v1' #'Humanoid-v1' #'InvertedPendulum-v1' #specify environments here
-        env = gym.make(experiment)
+        env = gym.make(experiment, render_mode="human")
         # env = gym.wrappers.Monitor(env,ChooseRecordingPath(experiment, TimeOfRecording)) #'/home/chitianqilin/recording/OpenAIGym/cartpole-experiment-1/'+TimeOfRecording+'/')#'/media/archive2T/chitianqilin/recording/OpenAIGym/cartpole-experiment-1/')
         # steps= env.spec.timestep_limit #steps per episode  
 #        if HumanRewarding == 1:
             
         env.render()
-        env.unwrapped.viewer.window.on_key_press = key_press
-        env.unwrapped.viewer.window.on_key_release = key_release
+        # env.unwrapped.viewer.window.on_key_press = key_press
+        # env.unwrapped.viewer.window.on_key_release = key_release
 
         num_states = env.observation_space.shape[0]
         num_actions = env.action_space.shape[0]    
@@ -223,13 +227,6 @@ if __name__ == "__main__":
     if LoadData:
         Trainedpath=ChooseResultPath('BipedalWalker-v2', '2018-02-23_04-11-02') +'Trace/'
         with open(Trainedpath+'Weights.pkl', 'rb') as in_strm:
-#            WeightsData = dill.load(in_strm)
-#            ADSA.Weights= WeightsData['Weights1']  
-#            ADSA2.Weights= WeightsData['Weights2']  
-#            ADSA3.Weights= WeightsData['Weights3']
-#            ADSA.Amp=WeightsData['ADSA1'].Amp  
-#            ADSA2.Amp=WeightsData['ADSA2'].Amp  
-#            ADSA3.Amp=WeightsData['ADSA3'].Amp  
             WeightsData = dill.load(in_strm)
             ADSA=WeightsData['ADSA1']
             ADSA2=WeightsData['ADSA2'] 
@@ -241,18 +238,6 @@ if __name__ == "__main__":
             for key in ADSA3.Trace:
                 ADSA3.Trace[key].clear()    
             
-#     codepath=ChooseResultPath(experiment, TimeOfRecording) +'src/'
-#     #%%
-#     if not os.path.exists(codepath):
-#         os.makedirs(codepath)   
-#     for filename in os.listdir(os.getcwd()):
-#         if filename.endswith(".py"): 
-#             shutil.copy2(filename, codepath)
-#     with open(ChooseResultPath(experiment, TimeOfRecording)+'ReadMe', 'ab') as fReadMe:
-#         fReadMe.write('''RepulsiveLearning = %r
-# Adaption = %s
-# RandomSeed = %d''' %(args.Repulsive, args.Adaption, RandomSeed))
-        
     for i_episode in range(N_episode): # run 20 episodes
         if human_stop :
             break            
@@ -275,17 +260,7 @@ if __name__ == "__main__":
             if Info:    
                 env.render()
             Weights=ADSA.Weighters[:, :]
-#            Weights=[0.16445453,  0.3941391,   0.39019984,  0.32232265,  0.22707176,  0.29598296,  0.09359534,  0.00155432]
-#            Weights=[[ 0.15365847 ,0.15565741, 0.13029431, 0.13947224, 0.1394674,  0.15313161,
-#                       0.05928615, 0.0581073,  0.00054216, 0.00052663, 0.15821277, 0.15587638,
-#                       0.13029838, 0.15569447, 0.15588635, 0.15491027],
-#                     [ 0.13351836, 0.16856643, 0.15602891, 0.00193804, 0.07083676, 0.03863298,
-#                       0.12469986, 0.12647935, 0.03585411, 0.12712238, 0.11347878, 0.05041219,
-#                       0.12152496, 0.13855037, 0.12502779, 0.1684969 ],
-#                     [ 0.1982294,  0.2004831,  0.19191012, 0.09424734, 0.08585426, 0.19546088,
-#                       0.00483423, 0.01991292, 0.13640185, 0.19855782, 0.1782773,  0.19834147,
- #                      0.01808887, 0.12016349, 0.04105342, 0.08570815]]
-#            output=np.dot(Weights, np.hstack((np.tanh(ObPreProcess(observation)),relu(action),-relu(-action))))
+
             Neuron1Out=relu(np.tanh(np.dot(Weights, np.tanh(MergeInputs(ObPreProcess(observation),action)))*NeuronSensitivity))
             if Adaption == "Nonlinear":
                 NeuronSensitivity += ((0.3-np.abs(0-Neuron1Out))*NeuronSensitivityUpdateRate*dt)*(2-np.log10(NeuronSensitivity))*(np.log10(NeuronSensitivity)-(-2))/4
