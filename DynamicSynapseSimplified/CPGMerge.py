@@ -1,15 +1,14 @@
 import numpy as np
-import FitzHughNagumo as FN
-import torch
-
+import FitzHughNagumo as FHN
+import DynamicSynapseArray2DRandomSin as DSA
 class CPGCombiened():
     def __init__(self, t=0):
-        self.AFHNN_l1 = FN.FHNN(1, scale=0.02)
-        self.AFHNN_r1 = FN.FHNN(1, scale=0.02)
-        self.AFHNN_l2 = FN.FHNN(1, scale=0.02)
-        self.AFHNN_r2 = FN.FHNN(1, scale=0.02)
-        self.AFHNN_l3 = FN.FHNN(1, scale=0.02)
-        self.AFHNN_r3 = FN.FHNN(1, scale=0.02)
+        self.AFHNN_l1 = FHN.FHNN(1, scale=0.02)
+        self.AFHNN_r1 = FHN.FHNN(1, scale=0.02)
+        self.AFHNN_l2 = FHN.FHNN(1, scale=0.02)
+        self.AFHNN_r2 = FHN.FHNN(1, scale=0.02)
+        self.AFHNN_l3 = FHN.FHNN(1, scale=0.02)
+        self.AFHNN_r3 = FHN.FHNN(1, scale=0.02)
         self.t=t
 
     def StepDynamic(self, dt, I):
@@ -57,4 +56,3 @@ class CPGCombiened():
 
         
         
-

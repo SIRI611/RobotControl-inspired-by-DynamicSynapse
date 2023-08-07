@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import gym
-#import DynamicSynapseArray2D as DSA
-#import DynamicSynapseArray2DLimitedDiffuse as DSA
 import DynamicSynapseArray2DRandomSin as DSA
+import CombinedCPG as CCPG
 #import DynamicSynapseArray2DLinear as DSA
 import numpy as np
 np.set_printoptions(threshold=np.inf)
@@ -95,6 +94,7 @@ def str2bool(v):
         return False
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
+    
         
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -149,7 +149,7 @@ if __name__ == "__main__":
         num_states = env.observation_space.shape[0]
         num_actions = env.action_space.shape[0]    
         observation = env.reset()[0]
-        NumberOfSynapses = np.array([num_actions*2, (num_states-321)*2+(321)+1+num_actions])
+        NumberOfSynapses = np.array([64, (num_states-321)*2+(321)+1+num_actions])
 #      Weighters= np.ones((NumberOfNeuron,NumberOfSynapses))*0.2+ 0.1 * np.random.rand(NumberOfNeuron,NumberOfSynapses)#np.random.rand(NumberOfNeuron,NumberOfSynapses) #0.5*np.ones(NumberOfSynapses) +0.001*np.random.rand(NumberOfSynapses)  #
 
         dt = 33
@@ -157,17 +157,115 @@ if __name__ == "__main__":
         T = 0
         
 #        Weighters= np.ones(NumberOfSynapses)*0+ 0.4* (np.random.rand(*NumberOfSynapses)-0.5)
+        # WeightersCentre = np.ones(NumberOfSynapses)*0.1+ 0.2* (np.random.rand(*NumberOfSynapses)-0.5)
         WeightersCentre = np.ones(NumberOfSynapses)*0.1+ 0.2* (np.random.rand(*NumberOfSynapses)-0.5)
+        #l1
+        WeightersCentre[0:8][0:19] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[0:8][19:21] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[0:8][21:42] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[0:8][42:44] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[0:8][44] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[0:8][45:64] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[0:8][64:66] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[0:8][66:87] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[0:8][87:89] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[0:8][89] = 0.01+(np.random.rand()-0.5)*0.01
+        #r1
+        WeightersCentre[8:16][0:16] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[8:16][16:18] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[8:16][18:39] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[8:16][39:41] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[8:16][41:45] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[8:16][45:61] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[8:16][61:63] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[8:16][63:84] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[8:16][84:86] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[8:16][86:90] = 0.01+(np.random.rand()-0.5)*0.01
 
-        ADSA=DSA.DynamicSynapseArray(NumberOfSynapses , Period=20000, tInPeriod=None, PeriodVar=0.1,\
+        #l2
+        WeightersCentre[16:24][0:12] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[16:24][12:15] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[16:24][15:35] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[16:24][35:38] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[16:24][38:45] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[16:24][45:57] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[16:24][57:60] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[16:24][60:80] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[16:24][80:83] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[16:24][83:90] = 0.01+(np.random.rand()-0.5)*0.01
+
+        #r2
+        WeightersCentre[24:32][0:8] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[24:32][8:11] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[24:32][11:31] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[24:32][31:34] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[24:32][34:45] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[24:32][45:53] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[24:32][53:56] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[24:32][56:76] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[24:32][76:79] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[24:32][79:90] = 0.01+(np.random.rand()-0.5)*0.01
+
+        #l3
+        WeightersCentre[32:40][0:15] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[32:40][15] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[32:40][16:38] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[32:40][38] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[32:40][39:45] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[32:40][45:60] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[32:40][60] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[32:40][61:83] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[32:40][83] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[32:40][84:90] = 0.01+(np.random.rand()-0.5)*0.01
+
+        #r3
+        WeightersCentre[40:48][0:11] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[40:48][11] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[40:48][12:34] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[40:48][34] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[40:48][35:45] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[40:48][45:56] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[40:48][56] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[40:48][57:79] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[40:48][79] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[40:48][80:90] = 0.01+(np.random.rand()-0.5)*0.01
+
+        
+        #left arm
+        WeightersCentre[48:56][0:21] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[48:56][21] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[48:56][22:44] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[48:56][44] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[48:56][45:66] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[48:56][66] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[48:56][67:89] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[48:56][90] = 0.3+(np.random.rand()-0.5)*0.2
+
+        #right arm
+        WeightersCentre[56:64][0:18] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[56:64][18] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[56:64][19:41] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[56:64][41] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[56:64][42:45] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[56:64][45:63] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[56:64][63] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[56:64][64:86] = 0.01+(np.random.rand()-0.5)*0.01
+        WeightersCentre[56:64][86] = 0.3+(np.random.rand()-0.5)*0.2
+        WeightersCentre[56:64][87:90] = 0.01+(np.random.rand()-0.5)*0.01
+
+
+
+        ADSA=DSA.DynamicSynapseArray(NumberOfSynapses, Period=20000, tInPeriod=None, PeriodVar=0.1,\
                  Amp=0.2, WeightersCentre = None, WeightersCentreUpdateRate = 0.000012, WeightersOscilateDecay=0.0000003/100) #Amp=0.2
-
+        
+        CPG = CCPG()
+        CPG.InitRecording()
         NumberOfSynapses2 = np.array([8, num_actions*2+1])
         ADSA2=DSA.DynamicSynapseArray(NumberOfSynapses2 , Period=20000, tInPeriod=None, PeriodVar=0.1,\
                  Amp=0.2, WeightersCentre = None, WeightersCentreUpdateRate = 0.000012, WeightersOscilateDecay=0.0000003/100) #Amp=0.2
 
-        AFHNN = FN.FHNN(8,scale = 0.02)
-        AFHNN.InitRecording()        
+        # AFHNN = FN.FHNN(8,scale = 0.02)
+        # AFHNN.InitRecording()        
         
         NumberOfSynapses3 = np.array([num_actions, 16+45+1])
         # original
@@ -294,12 +392,7 @@ if __name__ == "__main__":
                 print(Weights)
                 print('Observation')
                 print(observation)
-#            points += reward*np.log(t+1)
-#            ModulatorAmount = ((np.log(reward+1) if reward>0 else 0)+ np.log((points-PointsLast)/100 if points-PointsLast>0 else 0))
-#            if ModulatorAmount <= 0:
-#                  ModulatorAmount = 0
-#            else:
-#                print('Modulator AmountRepulsiveLearning: %.9f'%(ModulatorAmount))
+                
             if HumanRewarding == 1:  
                 print('Human reward: %.6f'%(human_reward))
                 ModulatorAmount = human_reward
