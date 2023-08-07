@@ -191,10 +191,7 @@ if __name__ == "__main__":
                                    [0.5,0,0,0,0,0,0,0,0,0,-0.2,-0.2,0,0,0,0,0,0,0],
                                    [0,0,0,-0.5,0,0,0,0,0,0,0,0,0,-0.2,-0.2,0,0,0,0],
                                    [0,0.5,0,0,0,0,0,0,0,0,0,0,0,0,0,-0.2,-0.2,0,0]])
-#        WeightersCentre=np.array([[-0.5,0,0,0,0,0,0,0,-0.2,-0.2,0,0,0,0,0,0,0,0,0],
-#                                   [0,0,0.5,0,0,0,0,0,0,0,-0.2,-0.2,0,0,0,0,0,0,0],
-#                                   [0,-0.5,0,0,0,0,0,0,0,0,0,0,0,-0.2,-0.2,0,0,0,0],
-#                                   [0,0,0,0.5,0,0,0,0,0,0,0,0,0,0,0,-0.2,-0.2,0,0]])
+        
         ADSA3=DSA.DynamicSynapseArray(NumberOfSynapses3 , Period=20000, tInPeriod=None, PeriodVar=0.1,\
                  Amp=0.2, WeightersCentre = WeightersCentre, WeightersCentreUpdateRate = 0.000012, WeightersOscilateDecay=0.0000003/100)
         ADSA.InitRecording()

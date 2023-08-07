@@ -55,13 +55,16 @@ def sigmoid(x):
 def relu(x):
     return np.maximum(x,0,x)
 def ObPreProcess(ob):
+    #TODO factors adjustment
+
     # factors=[1/2*np.pi,5,2,2,1,
     #          0.5,1,0.3,1,1,
     #          0.5,1,0.25,1,2,
     #          1,1,1,1,1,
     #          1,1,1,1]
-    # NormaledOb=ob*factors
-    NormaledOb=ob
+    factors = np.ones(45)
+    NormaledOb=ob*factors
+    # NormaledOb=ob
     co=relu(NormaledOb[0:45])
     re=-relu(-NormaledOb[0:45])
     return np.hstack((co,re,NormaledOb[45:],1))
@@ -149,7 +152,7 @@ if __name__ == "__main__":
         num_states = env.observation_space.shape[0]
         num_actions = env.action_space.shape[0]    
         observation = env.reset()[0]
-        NumberOfSynapses = np.array([num_actions*2, (num_states-321)*2+(321)+1+num_actions])
+        NumberOfSynapses = np.array([64, (num_states-321)*2+(321)+1+num_actions])
 #      Weighters= np.ones((NumberOfNeuron,NumberOfSynapses))*0.2+ 0.1 * np.random.rand(NumberOfNeuron,NumberOfSynapses)#np.random.rand(NumberOfNeuron,NumberOfSynapses) #0.5*np.ones(NumberOfSynapses) +0.001*np.random.rand(NumberOfSynapses)  #
 
         dt = 33
@@ -157,8 +160,9 @@ if __name__ == "__main__":
         T = 0
         
 #        Weighters= np.ones(NumberOfSynapses)*0+ 0.4* (np.random.rand(*NumberOfSynapses)-0.5)
-        WeightersCentre = np.ones(NumberOfSynapses)*0.1+ 0.2* (np.random.rand(*NumberOfSynapses)-0.5)
-
+        # WeightersCentre = np.ones(NumberOfSynapses)*0.1+ 0.2* (np.random.rand(*NumberOfSynapses)-0.5)
+        WeightersCentre= np.ones(NumberOfSynapses)*0+ 0.4* (np.random.rand(*NumberOfSynapses)-0.5)
+        WeightersCentre[]
         ADSA=DSA.DynamicSynapseArray(NumberOfSynapses , Period=20000, tInPeriod=None, PeriodVar=0.1,\
                  Amp=0.2, WeightersCentre = None, WeightersCentreUpdateRate = 0.000012, WeightersOscilateDecay=0.0000003/100) #Amp=0.2
 

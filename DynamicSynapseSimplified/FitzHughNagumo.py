@@ -29,6 +29,7 @@ class FHNN:
             DW=(self.a[NeuronID]*(self.b[NeuronID]*V-self.c[NeuronID] *W))*self.scale
         return np.array([Dv, DW])
     
+    # only output Vn
     def StepDynamics(self, dt, I):
         self.t += dt
         self.I = I
@@ -43,7 +44,7 @@ class FHNN:
         self.Vn[self.Vn<-2]=-2
         self.Wn[self.Wn>2]=2
         self.Wn[self.Wn<-2]=-2     
-        return[self.Vn, self.Wn]
+        return self.Vn
     
     def Update(self):
         assert np.logical_not(np.logical_or(np.any(np.isnan([self.Vn,self.Vp])),np.any(np.isinf([self.Vn,self.Vp])))), \
