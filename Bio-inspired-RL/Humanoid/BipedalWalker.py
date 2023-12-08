@@ -116,7 +116,6 @@ if __name__ == "__main__":
     human_stop = False  
     human_render = False
     TimeOfRecording=time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
-            # %%
     new = True #False # 
     Info =0
     StepRecording = args.StepRecording
@@ -134,10 +133,8 @@ if __name__ == "__main__":
     RepulsiveLearning = args.Repulsive
     Adaption = args.Adaption
     if new:
-        experiment= 'BipedalWalker-v3'#'InvertedPendulum-v1' #'InvertedDoublePendulum-v1' #'Walker2d-v1' #'BipedalWalker-v2'# 'RoboschoolWalker2d-v1' #'Humanoid-v1' #'InvertedPendulum-v1' #specify environments here
+        experiment= 'BipedalWalker-v3'
         env = gym.make(experiment, render_mode="human")
-        # env = gym.wrappers.Monitor(env,ChooseRecordingPath(experiment, TimeOfRecording)) #'/home/chitianqilin/recording/OpenAIGym/cartpole-experiment-1/'+TimeOfRecording+'/')#'/media/archive2T/chitianqilin/recording/OpenAIGym/cartpole-experiment-1/')
-        # steps= env.spec.timestep_limit #steps per episode  
 #        if HumanRewarding == 1:
             
         # env.render()
@@ -148,13 +145,11 @@ if __name__ == "__main__":
         num_actions = env.action_space.shape[0]    
         observation = env.reset()[0]
         NumberOfSynapses = np.array([num_actions*2, (num_states-10)*2+(10)+1+num_actions])
-  #      Weighters= np.ones((NumberOfNeuron,NumberOfSynapses))*0.2+ 0.1 * np.random.rand(NumberOfNeuron,NumberOfSynapses)#np.random.rand(NumberOfNeuron,NumberOfSynapses) #0.5*np.ones(NumberOfSynapses) +0.001*np.random.rand(NumberOfSynapses)  #
 
         dt = 33
         N_episode = 100000 #550000#1000# 300000
         T = 0
         
-#        Weighters= np.ones(NumberOfSynapses)*0+ 0.4* (np.random.rand(*NumberOfSynapses)-0.5)
         WeightersCentre = np.ones(NumberOfSynapses)*0.1+ 0.2* (np.random.rand(*NumberOfSynapses)-0.5)
 
         ADSA=DSA.DynamicSynapseArray(NumberOfSynapses , Period=20000, tInPeriod=None, PeriodVar=0.1,\
@@ -349,7 +344,6 @@ if __name__ == "__main__":
                 # env.render()
                 if Rendering ==1:
                     Rendering=0
-#                    WhenRender+=WhenRenderStep
                 if  EpisodeReward > WhenRender: # or PointsLast>30:
                     Rendering = 1
                     WhenRender=EpisodeReward
@@ -399,13 +393,11 @@ if __name__ == "__main__":
         
         FigureDict['Reward'] = plt.figure()  
         figure13lines = plt.plot(Trace['t'], Trace['reward'])
-#        plt.legend(figure11lines, labels)
         plt.xlabel('Time (s)')
         plt.title('Reward')  
 
         FigureDict['RewardZone in'] = plt.figure()  
         figure13lines = plt.plot(Trace['t'], Trace['reward'])
-#        plt.legend(figure11lines, labels)
         plt.ylim(-1.5,1.5)
         plt.xlabel('Time (s)')
         plt.title('Reward')  
