@@ -1,19 +1,3 @@
-# import gym
-# from gym.wrappers import RecordVideo, capped_cubic_video_schedule
-# env = gym.make("CartPole-v1")
-# env.unwrapped.render_mode = "rgb_array"
-# # env = RecordVideo(env, "videos")
-# # the above is equivalent as
-# env = RecordVideo(env, "videos", episode_trigger=capped_cubic_video_schedule)
-# observation = env.reset()
-# for _ in range(1000):
-#     env.render()
-#     action = env.action_space.sample() # your agent here (this takes random actions)
-#     observation, reward, done, info = env.step(action)
-#     if done:
-#         observation = env.reset()
-# env.close()
-
 # import pickle 
 # f = open(r'/home/robot/Documents/SimulationResult/OpenAIGym/Humanoid-v4/2023-08-13_21-27-59/Trace/Weights.pkl','rb')
 # data = pickle.load(f)
