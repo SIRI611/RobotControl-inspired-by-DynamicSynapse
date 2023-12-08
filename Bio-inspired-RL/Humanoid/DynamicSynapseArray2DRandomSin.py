@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import numpy as np
@@ -48,11 +48,6 @@ class DynamicSynapseArray:
         self.ModulatorAmount = np.ones(NumberOfSynapses) *  ModulatorAmount
         self.ZeroCross=np.ones(NumberOfSynapses, dtype=bool)
 
-#        self.LearningRuleOsci=LearningRuleOsci
-#        self.LearningRulePre=LearningRulePre
-#        self.LearningRulePreFactor=1
-#        self.WeightersCentreVar=np.zeros(self.WeightersCentre.shape)
-
     def StepSynapseDynamics(self, dt,t, ModulatorAmount,PreSynActivity=None):
         
         if dt is None:
@@ -62,11 +57,6 @@ class DynamicSynapseArray:
         self.Weighters = self.WeightersCentre + self.Amp*np.sin(self.tInPeriod/self.Period*2*np.pi)
 #        self.WeightersCentre += (self.Weighters-self.WeightersCentre)*relu(ModulatorAmount) *self.WeightersCentreUpdateRate*dt
         self.WeightersCentre += (self.Weighters-self.WeightersCentre)*ModulatorAmount *self.WeightersCentreUpdateRate*dt
-#        if self.LearningRuleOsci==True:        
-#            self.WeightersCentreVar += (self.Weighters-self.WeightersCentre)*ModulatorAmount *self.WeightersCentreUpdateRate*dt
-#        if self.LearningRulePre==True:
-#            self.WeightersCentreVar += (self.LearningRulePreFactor*PreSynActivity-self.WeightersCentre)*ModulatorAmount *self.WeightersCentreUpdateRate*dt
-#        self.WeightersCentre += self.WeightersCentreVar    
 
         if self.NormalizedWeight:
             self.WeightersCentre /= np.sum(np.abs(self.WeightersCentre),axis=1)[:,None]
