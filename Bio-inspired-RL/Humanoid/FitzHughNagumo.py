@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import os
 import numpy as np
@@ -87,12 +87,7 @@ class FHNN:
                                     np.array(self.Trace['Wn'])[Index],\
                                     np.array(self.Trace['I'])[Index])).T)
         plt.legend(lines, ['v', 'w', 'I'], loc=4)    
-#        lines=plt.plot(np.array(self.Trace['t'])[::DownSampleRate],\
-#                          np.vstack((np.array(self.Trace['Vn'])[Index],\
-#                                    np.array(self.Trace['Wn'])[Index],\
-#                                    np.array(self.Trace['I'])[Index],\
-#                                    np.array(self.Trace['Vn'])[Index] - np.array(self.Trace['Wn'])[Index])).T)
-#        plt.legend(lines, ['v', 'w', 'I', 'v+w'], loc=4)
+
         plt.savefig(PlotPath+'FHNDynamicWithTime{}.png'.format(str(NeuronID)))    
         plt.xlabel('Time (ms)')
         plt.show()
@@ -139,19 +134,6 @@ class FHNN:
             V1 , U1  = np.meshgrid(Vspace, Uspace) 
             DV1, DU1=self.Derivative([V1, U1],I, NeuronID=0)
             M = np.hypot(DV1, DU1)
-#            M=M+1
-#            logM=np.log(M)
-#            RatioM=logM / M
-#            DV1Ratioed=DV1*RatioM
-#            DU1Ratioed=DU1*RatioM
-#            DV1Normal=DV1Ratioed#/np.max(DV1Ratioed)
-#            DU1Normal=DU1Ratioed#/np.max(DU1Ratioed)
-#            ratioV=Vstep/np.max(np.abs(DV1Normal))*0.5
-#            ratioU=Ustep/np.max(np.abs(DU1Normal))*0.5
-#            
-#            DV1Scaled=DV1Ratioed*ratioV*ratioU
-#            DU1Scaled=DU1Ratioed*ratioV*ratioU
-#            ax.quiver(V1 , U1, DV1Scaled, DU1Scaled, (M), width=0.002, scale=100)#pivot='mid')
             ax.quiver(V1 , U1,DV1, DU1, M,   width=0.002,  angles='xy')#scale=100,pivot='mid')
         #ax.legend(bbox_to_anchor=(0.6, 0.2), loc=2, borderaxespad=0.,prop={'size':12})
         Index=np.s_[::DownSampleRate, NeuronID]
